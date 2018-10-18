@@ -5,6 +5,7 @@ import {
   FormControl,
   ControlLabel
 } from "react-bootstrap";
+import { Auth } from "aws-amplify";
 import LoaderButton from "../components/LoaderButton";
 import "./SignUp.css";
 
@@ -44,7 +45,19 @@ export default class SignUp extends Component {
     event.preventDefault();
 
     this.setState({ isLoading: true });
-    this.setState({ newUser: "test" });
+
+    try {
+      const newUser = await Auth.signUp({
+        username: this.state.email,
+        password: this.state.password
+      });
+      this.setState({
+        newUser
+      });
+    } catch (e) {
+      alert(e.message);
+    }
+
     this.setState({ isLoading: false });
   }
 
@@ -52,6 +65,17 @@ export default class SignUp extends Component {
     event.preventDefault();
 
     this.setState({ isLoading: true });
+
+    try {
+      await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
+      await Auth.signIn(this.state.email, this.state.password);
+
+      this.props.userHasAuthenticated(true);
+      this.props.history.push("/");
+    } catch (e) {
+      alert(e.message);
+      this.setState({isLoading: false});
+    }
   }
 
   renderConfirmationForm() {
