@@ -7,6 +7,8 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import config from "./config";
 
+window.LOG_LEVEL='DEBUG'
+
 Amplify.configure({
   Auth: {
     mandatorySignIn: true,
